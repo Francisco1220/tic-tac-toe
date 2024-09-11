@@ -35,8 +35,9 @@ function gameController () {
     // Check the currently active player and switch player accordingly
     const switchPlayer = () => {
         playerTurn = playerTurn === players[0] ? players[1] : players[0];
-      };
+    };
     // Users call playRound and enter row and column to make play
+    let winningPlayer;
     function playRound(row, column) {
         let currentBoard = board.getBoard();
         // Check the available Cells in the gameboard
@@ -50,7 +51,6 @@ function gameController () {
         }
         function checkWinner(row, column) {
             // Check for rows
-            let winningPlayer;
             if (currentBoard[row][0] === playerTurn.marker && currentBoard[row][1] === playerTurn.marker && currentBoard[row][2] === playerTurn.marker) {
                 console.log(`${playerTurn.name} is the Winner!`);
                 winningPlayer = playerTurn.name;
@@ -68,7 +68,7 @@ function gameController () {
 
         }
     }
-    const getWinner = () => playerTurn.name;
+    const getWinner = () => winningPlayer;
     const getPlayerTurn = () => playerTurn;
     return {playRound, getPlayerTurn, getWinner, getBoard}
 }
@@ -80,6 +80,7 @@ function displayController () {
     function updateGameboard () {
         // Grab all divs/cells and give them a data attribute to associate rows and columns, which will later be passed to playRound()
         const divs = document.querySelectorAll(".container > div");
+        const textDisplay = document.querySelector(".text-display > div");
         for (let i = 0; i < divs.length; i++) {
             // set data-row and data-column attributes
             if (i < 3) {
@@ -94,7 +95,6 @@ function displayController () {
             }
             divs[i].addEventListener("click", () => {
                 // Get current board and the player's turn
-                const board = game.getBoard();
                 const playerTurn = game.getPlayerTurn();
                 console.log(playerTurn.name);
                 divs[i].innerHTML = playerTurn.marker;
@@ -102,6 +102,12 @@ function displayController () {
                 let getRow = Number(divs[i].getAttribute("data-row"));
                 let getColumn = Number(divs[i].getAttribute("data-column"));
                 game.playRound(getRow, getColumn);
+                let winningPlayer = game.getWinner();
+                if (winningPlayer === undefined) {
+                    textDisplay.innerHTML = "";
+                } else {
+                    textDisplay.innerHTML = `${winningPlayer} is the Champ!`;
+                }
             })
         }
      }

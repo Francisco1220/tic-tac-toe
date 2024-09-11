@@ -20,6 +20,7 @@ function gameBoard () {
 // Will control the flow or logic of the game
 function gameController () {
     const board = gameBoard();
+    const {getBoard} = gameBoard();
     const players = [{
         name: "Player One",
         marker: "X",
@@ -66,17 +67,48 @@ function gameController () {
             }
 
         }
-       
-
     }
     const getWinner = () => playerTurn.name;
     const getPlayerTurn = () => playerTurn;
-    return {playRound, getPlayerTurn, getWinner}
+    return {playRound, getPlayerTurn, getWinner, getBoard}
 }
 
-const game = gameController();
+function displayController () {
+    // game instance of gameController() moved within dislayController() since user will play through DOM
+    const game = gameController();
+    console.log(game);
+    function updateGameboard () {
+        // Grab all divs/cells and give them a data attribute to associate rows and columns, which will later be passed to playRound()
+        const divs = document.querySelectorAll(".container > div");
+        for (let i = 0; i < divs.length; i++) {
+            // set data-row and data-column attributes
+            if (i < 3) {
+                divs[i].setAttribute("data-row", "0");
+                divs[i].setAttribute("data-column", `${i}`);
+            } else if (i === 3 || i < 6) {
+                divs[i].setAttribute("data-row", "1");
+                divs[i].setAttribute("data-column", `${i-3}`);
+            } else if (i === 6 || i < 9) {
+                divs[i].setAttribute("data-row", "2");
+                divs[i].setAttribute("data-column", `${i-6}`);
+            }
+            divs[i].addEventListener("click", () => {
+                // Get current board and the player's turn
+                const board = game.getBoard();
+                const playerTurn = game.getPlayerTurn();
+                console.log(playerTurn.name);
+                divs[i].innerHTML = playerTurn.marker;
+                // Get row and column data attribute
+                let getRow = Number(divs[i].getAttribute("data-row"));
+                let getColumn = Number(divs[i].getAttribute("data-column"));
+                game.playRound(getRow, getColumn);
+            })
+        }
+     }
+    updateGameboard();
+};
 
-
+displayController();
 
 
 

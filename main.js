@@ -102,6 +102,11 @@ function displayController () {
                 let winningPlayer = game.getWinner();
                 if (invalid === false) {
                     divs[i].innerHTML = playerTurn.marker;
+                    if (playerTurn.marker === "X") {
+                        divs[i].style.color = "blue";
+                    } else {
+                        divs[i].style.color = "red";
+                    }
                     if (winningPlayer === undefined) {
                         textDisplay.innerHTML = "";
                     } else {
@@ -153,3 +158,5 @@ function displayController () {
 };
 
 displayController();
+
+// Edit font style and color of markers(blue for player with "X" and red for player with "O")

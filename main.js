@@ -70,12 +70,13 @@ function gameController () {
     const getWinner = () => winningPlayer;
     const getPlayerTurn = () => playerTurn;
     const getCurrentBoard = () => currentBoard;
-    return {playRound, getPlayerTurn, getWinner, getCurrentBoard}
+    return {playRound, getPlayerTurn, getWinner, getCurrentBoard, players}
 }
 
 function displayController () {
     // game instance of gameController() moved within dislayController() since user will play through DOM
     let game = gameController();
+    console.log(game);
     let playerTurn;
     function updateGameboard () {
         // Grab all divs/cells and give them a data attribute to associate rows and columns, which will later be passed to playRound()
@@ -109,6 +110,23 @@ function displayController () {
                 }
             })
         }
+        const startBtn = document.querySelector("button:first-child");
+        const p1Input = document.querySelector(".playerOneInput");
+        const p2Input = document.querySelector(".playerTwoInput");
+        console.log(p1Input);
+        console.log(p2Input);
+        console.log(startBtn);
+        function setStartBtn () {
+            startBtn.addEventListener("click", () => {
+                let playerOneName = p1Input.value;
+                let playerTwoName = p2Input.value;
+                game.players[0].name = playerOneName;
+                game.players[1].name = playerTwoName;
+                p1Input.value = "";
+                p2Input.value = "";
+                
+            })
+        }
         const restartBtn = document.querySelector("button:nth-child(2)");
         function setRestartBtn () {
             restartBtn.addEventListener("click", () => {
@@ -131,9 +149,15 @@ function displayController () {
                 console.log(game);
             })
         }
+        setStartBtn();
         setRestartBtn();
      }
     updateGameboard();
 };
 
 displayController();
+
+// Allow users to choose their names (inputs on the left of gameboard)
+// Fix bug that allows players to change markers after pick is made
+// Edit font style and color of markers(blue for player with "X" and red for player with "O")
+// Print on screen when the user has made an invalid move

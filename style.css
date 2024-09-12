@@ -2,17 +2,19 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: "Roboto";
 }
 
 .gameboard > div {
     width: 100px;
     height: 100px;
     border: 2px solid;
-    background-color: rgb(242, 242, 242);
+    background-color: rgb(230, 230, 230);
     font-size: 50px;
     text-align: center;
     vertical-align: center;
     line-height: 100px;
+    border: none black;
 }
 
 .gameboard {
@@ -47,6 +49,7 @@
 input {
     width: 200px;
     height: 30px;
+    padding-left: 10px;
 }
 
 button {

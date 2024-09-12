@@ -18,7 +18,6 @@ function gameBoard () {
 // Will control the flow or logic of the game
 function gameController () {
     const board = gameBoard();
-    const {getBoard} = gameBoard();
     const players = [{
         name: "Player One",
         marker: "X",
@@ -37,31 +36,29 @@ function gameController () {
     // Users call playRound and enter row and column to make play
     let winningPlayer;
     let currentBoard;
+    let invalid = false;
     function playRound(row, column) {
         currentBoard = board.getBoard();
-        console.log(currentBoard);
         // Check the available Cells in the gameboard
         if (currentBoard[row][column] === 0) {
             currentBoard[row][column] = playerTurn.marker;
             checkWinner(row, column);
             switchPlayer();
+            invalid = false;
         } else if (currentBoard[row][column] === "X" || currentBoard[row][column] === "O" ) {
-            return console.log("Invalid Move. Please try again");
+            invalid = true;
         }
         function checkWinner(row, column) {
             // Check for rows
             if (currentBoard[row][0] === playerTurn.marker && currentBoard[row][1] === playerTurn.marker && currentBoard[row][2] === playerTurn.marker) {
-                console.log(`${playerTurn.name} is the Winner!`);
                 winningPlayer = playerTurn.name;
             }
             // Check for columns
             if (currentBoard[0][column] === playerTurn.marker && currentBoard[1][column] === playerTurn.marker && currentBoard[2][column] === playerTurn.marker ) {
-                console.log(`${playerTurn.name} is the Winner!`);
                 winningPlayer = playerTurn.name;
             }
             // Check for diagonals
             if (currentBoard[0][0] === playerTurn.marker && currentBoard[1][1] === playerTurn.marker && currentBoard[2][2] === playerTurn.marker) {
-                console.log(`${playerTurn.name} is the Winner!`);
                 winningPlayer = playerTurn.name;
             }
 
@@ -70,13 +67,13 @@ function gameController () {
     const getWinner = () => winningPlayer;
     const getPlayerTurn = () => playerTurn;
     const getCurrentBoard = () => currentBoard;
-    return {playRound, getPlayerTurn, getWinner, getCurrentBoard, players}
+    const getValidation = () => invalid;
+    return {playRound, getPlayerTurn, getWinner, getCurrentBoard, players, getValidation}
 }
 
 function displayController () {
     // game instance of gameController() moved within dislayController() since user will play through DOM
     let game = gameController();
-    console.log(game);
     let playerTurn;
     function updateGameboard () {
         // Grab all divs/cells and give them a data attribute to associate rows and columns, which will later be passed to playRound()
@@ -97,25 +94,27 @@ function displayController () {
             divs[i].addEventListener("click", () => {
                 // Get current board and the player's turn
                 playerTurn = game.getPlayerTurn();
-                divs[i].innerHTML = playerTurn.marker;
                 // Get row and column data attribute
                 let getRow = Number(divs[i].getAttribute("data-row"));
                 let getColumn = Number(divs[i].getAttribute("data-column"));
                 game.playRound(getRow, getColumn);
+                let invalid = game.getValidation();
                 let winningPlayer = game.getWinner();
-                if (winningPlayer === undefined) {
-                    textDisplay.innerHTML = "";
-                } else {
-                    textDisplay.innerHTML = `${winningPlayer} is the Champ!`;
+                if (invalid === false) {
+                    divs[i].innerHTML = playerTurn.marker;
+                    if (winningPlayer === undefined) {
+                        textDisplay.innerHTML = "";
+                    } else {
+                        textDisplay.innerHTML = `${winningPlayer} is the Champ!`;
+                    }
+                } else if (invalid === true) {
+                    textDisplay.innerHTML = "Invalid Move. Please try again."
                 }
             })
         }
         const startBtn = document.querySelector("button:first-child");
         const p1Input = document.querySelector(".playerOneInput");
         const p2Input = document.querySelector(".playerTwoInput");
-        console.log(p1Input);
-        console.log(p2Input);
-        console.log(startBtn);
         function setStartBtn () {
             startBtn.addEventListener("click", () => {
                 let playerOneName = p1Input.value;
@@ -141,12 +140,10 @@ function displayController () {
                 for (let i = 0; i < divs.length; i++) { 
                     divs[i].innerHTML = "";
                 }
-                console.log(currentBoard);
                 // Clear textDisplay
                 textDisplay.innerHTML = "";
                 // restart game by reassigning game to new instance of game logic 
                 game = gameController();
-                console.log(game);
             })
         }
         setStartBtn();
@@ -156,8 +153,3 @@ function displayController () {
 };
 
 displayController();
-
-// Allow users to choose their names (inputs on the left of gameboard)
-// Fix bug that allows players to change markers after pick is made
-// Edit font style and color of markers(blue for player with "X" and red for player with "O")
-// Print on screen when the user has made an invalid move

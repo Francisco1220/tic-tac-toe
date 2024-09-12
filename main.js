@@ -12,9 +12,7 @@ function gameBoard () {
         }
     }
     const getBoard = () => board;
-    const printBoard = () => console.log(board);
-    printBoard();
-    return {getBoard, printBoard}
+    return {getBoard}
 }
 
 // Will control the flow or logic of the game
@@ -38,12 +36,13 @@ function gameController () {
     };
     // Users call playRound and enter row and column to make play
     let winningPlayer;
+    let currentBoard;
     function playRound(row, column) {
-        let currentBoard = board.getBoard();
+        currentBoard = board.getBoard();
+        console.log(currentBoard);
         // Check the available Cells in the gameboard
         if (currentBoard[row][column] === 0) {
             currentBoard[row][column] = playerTurn.marker;
-            board.printBoard();
             checkWinner(row, column);
             switchPlayer();
         } else if (currentBoard[row][column] === "X" || currentBoard[row][column] === "O" ) {
@@ -70,16 +69,17 @@ function gameController () {
     }
     const getWinner = () => winningPlayer;
     const getPlayerTurn = () => playerTurn;
-    return {playRound, getPlayerTurn, getWinner, getBoard}
+    const getCurrentBoard = () => currentBoard;
+    return {playRound, getPlayerTurn, getWinner, getCurrentBoard}
 }
 
 function displayController () {
     // game instance of gameController() moved within dislayController() since user will play through DOM
-    const game = gameController();
-    console.log(game);
+    let game = gameController();
+    let playerTurn;
     function updateGameboard () {
         // Grab all divs/cells and give them a data attribute to associate rows and columns, which will later be passed to playRound()
-        const divs = document.querySelectorAll(".container > div");
+        const divs = document.querySelectorAll(".gameboard > div");
         const textDisplay = document.querySelector(".text-display > div");
         for (let i = 0; i < divs.length; i++) {
             // set data-row and data-column attributes
@@ -95,8 +95,7 @@ function displayController () {
             }
             divs[i].addEventListener("click", () => {
                 // Get current board and the player's turn
-                const playerTurn = game.getPlayerTurn();
-                console.log(playerTurn.name);
+                playerTurn = game.getPlayerTurn();
                 divs[i].innerHTML = playerTurn.marker;
                 // Get row and column data attribute
                 let getRow = Number(divs[i].getAttribute("data-row"));
@@ -110,13 +109,31 @@ function displayController () {
                 }
             })
         }
+        const restartBtn = document.querySelector("button:nth-child(2)");
+        function setRestartBtn () {
+            restartBtn.addEventListener("click", () => {
+                // Clear gameboard
+                const currentBoard = game.getCurrentBoard();
+                for (let i = 0; i < currentBoard.length; i++) {
+                    currentBoard[i][0] = "0";
+                    currentBoard[i][1] = "0";
+                    currentBoard[i][2] = "0";
+                }
+                // Clear divs of gameboard
+                for (let i = 0; i < divs.length; i++) { 
+                    divs[i].innerHTML = "";
+                }
+                console.log(currentBoard);
+                // Clear textDisplay
+                textDisplay.innerHTML = "";
+                // restart game by reassigning game to new instance of game logic 
+                game = gameController();
+                console.log(game);
+            })
+        }
+        setRestartBtn();
      }
     updateGameboard();
 };
 
 displayController();
-
-
-
-
-
